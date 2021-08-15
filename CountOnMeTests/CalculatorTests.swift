@@ -49,9 +49,15 @@ final class CalculatorTests: XCTestCase {
     
     func testIfcanAddOperator() {
         let calculator = Calculator()
-       calculator.elements.append("12")
-       let sut = calculator.canAddOperator
+        calculator.elements.append("12")
+        let sut = calculator.canAddOperator
         XCTAssertEqual(sut,true)
+    }
+    
+    func testIfcanAddOperatorIsFalse() {
+        let calculator = Calculator()
+        let sut = calculator.canAddOperator
+        XCTAssertEqual(sut,false)
     }
     
     func testIfElementsHaveEnoughElement() {
@@ -81,13 +87,33 @@ final class CalculatorTests: XCTestCase {
         let calculator = Calculator()
         calculator.addAnSubstractionSymboleToElements()
         let sut = calculator.elements[0]
-        XCTAssertEqual(sut, " - ")
+        XCTAssertEqual(sut, "-")
     }
     
     func testAddAnAdditionSymboleToElements() {
         let calculator = Calculator()
         calculator.addAnAdditionSymboleToElements()
         let sut = calculator.elements[0]
-        XCTAssertEqual(sut, " + ")
+        XCTAssertEqual(sut, "+")
+    }
+    
+    func testSendProcessCalcul() {
+        let calculator = Calculator()
+        calculator.elements.append("12")
+        calculator.elements.append("+")
+        calculator.elements.append("12")
+        let valueArray = calculator.sendProcessCalcul()
+        let sut = valueArray
+        XCTAssertEqual(sut, ["24"])
+    }
+
+    func testSendProcessCalculIfIsBeASubstraction() {
+        let calculator = Calculator()
+        calculator.elements.append("12")
+        calculator.elements.append("-")
+        calculator.elements.append("3")
+        let valueArray = calculator.sendProcessCalcul()
+        let sut = valueArray
+        XCTAssertEqual(sut, ["9"])
     }
 }
