@@ -8,98 +8,179 @@
 
 import Foundation
 
- class Calculator {
+ final class Calculator {
 
     // MARK: - Properties
 
-    var elements: [String] = [] {
+    private var elements: [String] = [] {
         didSet {
             displayedText?(elements.joined())
         }
     }
 
-    func sum(_ a: Int, _ b: Int) -> Int {
-        return a + b
-    }
+    private var finish = false
 
-    func division(_ a: Int, _ b: Int) -> Int{
-        return a / b
-        
-    }
-    
-    func substraction(_ a: Int, _ b: Int) -> Int{
-        return a - b
-    }
-    
-    func multiplication(_ a: Int, _ b: Int) -> Int {
-        return a * b
-    }
-
-    // MARK: - Error check computed variables
-    var expressionHaveResult: Bool {
-        return elements.contains("=")
-    }
-    
-    var expressionIsCorrect: Bool {
-        return elements.last != "+" && elements.last != "-"
-    }
-    
-    var expressionHaveEnoughElement: Bool {
-        return elements.count >= 3
-    }
-    
-    var canAddOperator: Bool {
-        return elements.count > 0 && elements.last != "+" && elements.last != "-"
-    }
-
-    // MQRK: - Outputs
+    // MARK: - Outputs
 
     var displayedText: ((String) -> Void)?
 
-    //var displayedAlert: ((String, String, String) -> Void)?
-    
-    
+    var displayedAlert: ((AlertContent) -> Void)?
+
+    // var displayedAlert: ((String, String, String) -> Void)?
 
     // MARK: - Inputs
-    
+
     func didTap(_ text: String) {
-        if expressionHaveResult {
-            elements = []
+
+        if let lastElement = elements.last {
+            if !["+", "-", "/", "x"].contains(lastElement) {
+                let newLast = lastElement + text
+                elements.removeLast()
+                elements.append(newLast)
+            } else {
+                elements.append(text)
+            }
+        } else {
+            elements.append(text)
         }
-        elements.append(text)
     }
-    
+
     func addAnAdditionSymboleToElements() {
-        elements.append("+")
+        deleteAllItemsInElementsIfOperationIsFinish()
+        if canAddOperator {
+            elements.append("+")
+        } else {
+            let alertContent = AlertContent(
+                title: "Zéro!",
+                message: "Un opérateur est déjà mis!",
+                cancelTitle: "Ok"
+            )
+            displayedAlert?(alertContent)
+        }
     }
-    
+
     func addAnSubstractionSymboleToElements() {
-        elements.append("-")
-    }
-    
-    func sendProcessCalcul() -> [String] {
-        return processCalcul()
+        deleteAllItemsInElementsIfOperationIsFinish()
+        if canAddOperator {
+            elements.append("-")
+        } else {
+            let alertContent = AlertContent(
+                title: "Zéro!",
+                message: "Un opérateur est déjà mis!",
+                cancelTitle: "Ok"
+            )
+            displayedAlert?(alertContent)
+        }
     }
 
-    // MARK: - Private Helpers
+    func addAnDivisionSymboleToElements() {
+        deleteAllItemsInElementsIfOperationIsFinish()
+        if canAddOperator {
+            elements.append("/")
+        } else {
+            let alertContent = AlertContent(
+                title: "Zéro!",
+                message: "Un opérateur est déjà mis!",
+                cancelTitle: "Ok"
+            )
+            displayedAlert?(alertContent)
+        }
+    }
 
-    private func processCalcul() -> [String] {
+    func addAnMultiplicationSymboleToElements() {
+        deleteAllItemsInElementsIfOperationIsFinish()
+        if canAddOperator {
+            elements.append("x")
+        } else {
+            let alertContent = AlertContent(
+                title: "Zéro!",
+                message: "Un opérateur est déjà mis!",
+                cancelTitle: "Ok"
+            )
+            displayedAlert?(alertContent)
+        }
+    }
+
+    func processCalcul() {
+        if !expressionIsCorrect {
+            let alertContent = AlertContent(
+                title: "Zéro!",
+                message: "Entrez une expression correcte !",
+                cancelTitle: "Ok"
+            )
+            displayedAlert?(alertContent)
+        } else if !expressionHaveEnoughElement {
+            let alertContent = AlertContent(
+                title: "Zéro!",
+                message: "Démarrez un nouveau calcul !",
+                cancelTitle: "Ok"
+            )
+            displayedAlert?(alertContent)
+        }
         var operationsToReduce = elements
         // Iterate over operations while an operand still here
         while operationsToReduce.count > 1 {
             let left = Int(operationsToReduce[0])!
+            print(left)
             let operand = operationsToReduce[1]
             let right = Int(operationsToReduce[2])!
-            
-            let result: Int
+
+            let result: Double
             switch operand {
-            case "+": result = left + right
-            case "-": result = left - right
-            default: fatalError("Unknown operator !")
+                case "+": result = self.sum(Double(left), Double(right))
+                case "-": result = self.substraction(Double(left), Double(right))
+                case "x": result = self.multiplication(Double(left), Double(right))
+                case "/": result = self.division(Double(left), Double(right))
+                default: fatalError("Unknown operator !")
             }
+
+            let formatter = NumberFormatter()
+            formatter.minimumFractionDigits = 0
+            formatter.maximumFractionDigits = 2
+            formatter.numberStyle = NumberFormatter.Style.decimal
+
             operationsToReduce = Array(operationsToReduce.dropFirst(3))
-            operationsToReduce.insert("\(result)", at: 0)
+            operationsToReduce.insert("\(formatter.string(from: NSNumber(value: result)) ?? "0")", at: 0)
+            self.finish = true
         }
-        return operationsToReduce
+        elements = operationsToReduce
+    }
+
+    func deleteAllItemsInElementsIfOperationIsFinish() {
+        if finish == true {
+            elements.removeAll()
+            self.finish = false
+        }
+    }
+
+    func sum(_ a: Double, _ b: Double) -> Double {
+        return a + b
+    }
+
+    func division(_ a: Double, _ b: Double) -> Double {
+        return a / b
+
+    }
+
+    func substraction(_ a: Double, _ b: Double) -> Double {
+        return a - b
+    }
+
+    func multiplication(_ a: Double, _ b: Double) -> Double {
+        return a * b
+    }
+
+    // MARK: - Error check computed variables
+
+    var expressionIsCorrect: Bool {
+        return elements.last != "+" && elements.last != "-" && elements.last != "x" && elements.last != "/" && elements.count > 0
+    }
+
+    var expressionHaveEnoughElement: Bool {
+        return elements.count >= 3
+    }
+
+    var canAddOperator: Bool {
+        return elements.count > 0 && elements.last != "+" && elements.last != "-" && elements.last != "x" && elements.last != "/"
     }
 }

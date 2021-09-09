@@ -20,100 +20,108 @@ final class CalculatorTests: XCTestCase {
         let sut = calculator.sum(1, 2)
         XCTAssertEqual(sut, 3)
     }
-    
+
     func testGivenCalculator_WhenDivision_ThenItReturnsResult() {
         let calculator = Calculator()
         let sut = calculator.division(2, 2)
         XCTAssertEqual(sut, 1)
     }
-    
+
     func testGivenCalculator_WhenSubstraction_ThenItReturnsResult() {
         let calculator = Calculator()
         let sut = calculator.substraction(2, 1)
         XCTAssertEqual(sut, 1)
     }
-    
+
     func testGivenCalculator_WhenMultiplication_ThenItReturnsResult() {
         let calculator = Calculator()
         let sut = calculator.multiplication(2, 1)
         XCTAssertEqual(sut, 2)
     }
-    
-    func testIfElementsHaveResult() {
+
+//
+
+    func testIfcanAddOperator_and_addAnAdditionSymboleToElements() {
+        let expectation = self.expectation(description: "Returned text")
         let calculator = Calculator()
-        calculator.elements.append("=")
-        calculator.elements.append("123")
-        let sut = calculator.expressionHaveResult
-        XCTAssertEqual(sut,true)
+
+        var counter = 1
+        calculator.displayedText = { text in
+            if counter == 4 {
+                XCTAssertEqual(text, "= 2")
+                expectation.fulfill()
+            }
+            counter+=1
+        }
+
+        calculator.didTap("1")
+        calculator.addAnAdditionSymboleToElements()
+        calculator.didTap("1")
+        calculator.processCalcul()
+
+        waitForExpectations(timeout: 1.0, handler: nil)
     }
-    
-    func testIfcanAddOperator() {
+
+    func testIfcanAddOperator_and_addAnDivisionSymboleToElements() {
+        let expectation = self.expectation(description: "Returned text")
         let calculator = Calculator()
-        calculator.elements.append("12")
-        let sut = calculator.canAddOperator
-        XCTAssertEqual(sut,true)
+
+        var counter = 1
+        calculator.displayedText = { text in
+            if counter == 4 {
+                XCTAssertEqual(text, "= 1")
+                expectation.fulfill()
+            }
+            counter+=1
+        }
+
+        calculator.didTap("2")
+        calculator.addAnSubstractionSymboleToElements()
+        calculator.didTap("1")
+        calculator.processCalcul()
+
+        waitForExpectations(timeout: 1.0, handler: nil)
     }
-    
+
     func testIfcanAddOperatorIsFalse() {
         let calculator = Calculator()
+
+        calculator.didTap("2")
+        calculator.addAnSubstractionSymboleToElements()
         let sut = calculator.canAddOperator
-        XCTAssertEqual(sut,false)
+        XCTAssertEqual(sut, false)
+
     }
-    
+
     func testIfElementsHaveEnoughElement() {
         let calculator = Calculator()
-        calculator.elements.append("2")
-        calculator.elements.append("+")
-        calculator.elements.append("2")
+
+        calculator.didTap("2")
+        calculator.didTap("+")
+        calculator.didTap("2")
         let sut = calculator.expressionHaveEnoughElement
-        XCTAssertEqual(sut,true)
+        XCTAssertEqual(sut, true)
     }
-    
+
     func testIfexpressionIsCorrect() {
         let calculator = Calculator()
-        calculator.elements.append("=")
+        calculator.didTap("=")
         let sut = calculator.expressionIsCorrect
         XCTAssertEqual(sut, true)
     }
-    
-    func testDidTap_AddStringToDiaplayedContent() {
-        let calculator = Calculator()
-        calculator.didTap("test")
-        let sut = calculator.elements[0]
-        XCTAssertEqual(sut, "test")
-    }
-    
-    func testAddAnSubstractionSymboleToElements() {
-        let calculator = Calculator()
-        calculator.addAnSubstractionSymboleToElements()
-        let sut = calculator.elements[0]
-        XCTAssertEqual(sut, "-")
-    }
-    
-    func testAddAnAdditionSymboleToElements() {
-        let calculator = Calculator()
-        calculator.addAnAdditionSymboleToElements()
-        let sut = calculator.elements[0]
-        XCTAssertEqual(sut, "+")
-    }
-    
-    func testSendProcessCalcul() {
-        let calculator = Calculator()
-        calculator.elements.append("12")
-        calculator.elements.append("+")
-        calculator.elements.append("12")
-        let valueArray = calculator.sendProcessCalcul()
-        let sut = valueArray
-        XCTAssertEqual(sut, ["24"])
-    }
-
-    func testSendProcessCalculIfIsBeASubstraction() {
-        let calculator = Calculator()
-        calculator.elements.append("12")
-        calculator.elements.append("-")
-        calculator.elements.append("3")
-        let valueArray = calculator.sendProcessCalcul()
-        let sut = valueArray
-        XCTAssertEqual(sut, ["9"])
-    }
+//    func testThatDivideByWeroRiseAnError() {
+//        let expectation = self.expectation(description: "Returned Alert")
+//        let calculator = Calculator()
+//
+//        calculator.displayedAlert = { alertContent in
+//            XCTAssertEqual(alertContent.message, "La division par zero est interdite.")
+//            expectation.fulfill()
+//        }
+//
+//        calculator.didTap("1")
+//        //calculator.addAnDivisionSymboleToElements()
+//        calculator.didTap("0")
+//        calculator.processCalcul()
+//        waitForExpectations(timeout: 1.0, handler: nil)
+//    }
 }
