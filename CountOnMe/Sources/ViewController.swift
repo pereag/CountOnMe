@@ -15,7 +15,7 @@ final class ViewController: UIViewController {
     private var calculator = Calculator()
 
     @IBOutlet private weak var textView: UITextView!
-   
+
     @IBOutlet private var numberButtons: [UIButton]!
 
     // MARK: - View Life cycles
@@ -45,7 +45,6 @@ final class ViewController: UIViewController {
     // MARK: - View actions
 
     @IBAction func tappedNumberButton(_ sender: UIButton) {
-        calculator.deleteAllItemsInElementsIfOperationIsFinish()
         guard let numberText = sender.title(for: .normal) else {
             return
         }

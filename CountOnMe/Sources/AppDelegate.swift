@@ -13,15 +13,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions
+                        launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         return true
     }
 }
-
-//export PATH="$PATH:/opt/homebrew/bin"
-//
-//if which swiftlint; then
-//    swiftlint --fix && swiftlint
-//else
-//  echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
-//fi
